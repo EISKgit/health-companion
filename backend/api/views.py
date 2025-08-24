@@ -8,6 +8,8 @@ from rest_framework.response import Response
 from .models import Profile
 from .serializers import ProfileSerializer
 import json
+from .serializers import SurveySerializer
+from rest_framework import status
 
 
 def health_check(request):
@@ -50,3 +52,19 @@ class ProfileView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=400)
+
+
+class SurveyView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        surveys = request.user.surveys.all().order_by("-date")
+        serializer = SurveySerializer(surveys, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = SurveySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

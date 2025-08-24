@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path
-from api.views import health_check, RegisterView, ProfileView
+from api.views import health_check, RegisterView, ProfileView, SurveyView
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -19,4 +19,7 @@ urlpatterns = [
 
     # Profile
     path('api/profile/', ProfileView.as_view(), name='profile'),
+
+    # Survey
+    path('api/surveys/', SurveyView.as_view(), name='surveys'),
 ]
