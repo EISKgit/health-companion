@@ -65,6 +65,48 @@ class SurveyView(APIView):
     def post(self, request):
         serializer = SurveySerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(user=request.user)
+            data = serializer.validated_data
+            recommendation = self.generate_recommendation(data)
+            serializer.save(user=request.user, recommendation=recommendation)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    
+    def generate_recommendation(self,data):
+        tips = []
+
+        if data.get("sleep_hours", 0) < 6:
+            tips.append("You slept less than 6 hours 😴. Try to go to bed earlier tonight.")
+
+        if not data.get("breakfast", True):
+            tips.append("You skipped breakfast 🍳. Eating in the morning helps boost energy.")
+
+        if data.get("water", 0) < 4:
+            tips.append("You drank less water 💧. Aim for at least 6-8 glasses today.")
+
+        if data.get("activity", 0) < 30:
+            tips.append("You had low activity yesterday 🏃. Try a 20-minute walk.")
+
+        if data.get("stress", 0) > 2:
+            tips.append("You reported high stress 😟. Take 10 mins for deep breathing or meditation.")
+
+        if data.get("screen_time", False):
+            tips.append("You used screens before bed 📱. Try avoiding screens 1h before sleep.")
+
+        if data.get("substance_use", False):
+            tips.append("Avoid smoking/alcohol 🚭. It affects your long-term health.")
+
+        if data.get("mood", 2) < 2:
+            tips.append("Your mood seems low 😔. Do something relaxing that you enjoy today.")
+
+        if data.get("work_hours", 0) > 10:
+            tips.append("Long work/study hours 🖥️. Remember to take short breaks.")
+
+        if data.get("pain", False):
+            tips.append("You reported discomfort 🩺. Make sure to rest and track it daily.")
+
+        if not tips:
+            tips.append("Great job! Keep up your healthy habits 🎉")
+
+        return " ".join(tips)
+
