@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import axios from "axios";
+
 
 export default function Survey() {
+    const [recommendationText, setRecommendationText] = useState("");
+
     const [step, setStep] = useState(1);
     const [answers, setAnswers] = useState({
         sleep_hours: 0,
@@ -28,6 +32,32 @@ export default function Survey() {
 
     const handleNext = () => {
         setStep(step + 1);
+    };
+
+    const handleSubmit = async () => {
+        try {
+            const payload = {
+                ...answers,
+                sleep_hours: parseInt(answers.sleep_hours, 10),
+                water: parseInt(answers.water, 10),
+                activity: parseInt(answers.activity, 10),
+            };
+
+            console.log("Submitting payload:", payload);
+
+            const response = await axios.post(
+                "http://127.0.0.1:8000/api/surveys/",
+                answers
+            );
+            alert("Survey submitted! Recommendation: " + response.data.recommendation);
+            // Save recommendation in state
+            setRecommendationText(response.data.recommendation);
+            console.log(response.data.recommendation);
+
+        } catch (error) {
+            console.error(error);
+            alert("Failed to submit survey.");
+        }
     };
 
     return (
@@ -328,6 +358,18 @@ export default function Survey() {
                                 </Button>
                             ))}
                         </div>
+                        <Button style={{ margin: '10px', marginTop: '20px' }} onClick={handleSubmit}>Submit Survey</Button>
+
+                    </div>
+
+
+                )}
+
+                {recommendationText && (
+                    <div className="mt-6 p-4 bg-green-100 text-green-800 rounded-md">
+                        <h3 className="font-semibold mb-2">Your Lifestyle Tips:</h3>
+
+                        <p>{recommendationText}</p>
                     </div>
                 )}
 
