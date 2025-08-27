@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from .models import Profile
 from .serializers import ProfileSerializer
@@ -55,8 +55,9 @@ class ProfileView(APIView):
 
 
 class SurveyView(APIView):
-    permission_classes = [IsAuthenticated]
-
+    # permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
+    
     def get(self, request):
         surveys = request.user.surveys.all().order_by("-date")
         serializer = SurveySerializer(surveys, many=True)
@@ -67,9 +68,16 @@ class SurveyView(APIView):
         if serializer.is_valid():
             data = serializer.validated_data
             recommendation = self.generate_recommendation(data)
-            serializer.save(user=request.user, recommendation=recommendation)
+
+            # Pass recommendation to serializer.save()
+            serializer.save(
+                user=request.user if request.user.is_authenticated else None,
+                recommendation=recommendation
+            )
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
     
     def generate_recommendation(self,data):
@@ -109,4 +117,8 @@ class SurveyView(APIView):
             tips.append("Great job! Keep up your healthy habits 🎉")
 
         return " ".join(tips)
-
+def perform_create(self, serializer):
+        data = serializer.validated_data.copy()  # copy validated data
+        recommendation = SurveyView().generate_recommendation(data)  # generate tips
+        print("here -> ",recommendation)
+        serializer.save(user=self.request.user, recommendation=recommendation)

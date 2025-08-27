@@ -12,7 +12,7 @@ class Profile(models.Model):
 
 
 class Survey(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="surveys")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="surveys", null=True, blank=True)
     date = models.DateField(auto_now_add=True)
 
     sleep_hours = models.IntegerField(null=True, blank=True)       # Q1
@@ -33,4 +33,7 @@ class Survey(models.Model):
     recommendation = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.user.username} survey on {self.date}"
+        if self.user:
+            return f"Survey by {self.user.username} on {self.date}"
+        return f"Survey (no user) on {self.date}"
+
