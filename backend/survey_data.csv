@@ -1,0 +1,6 @@
+id,user_id,date,sleep_hours,energy,ate_breakfast,water_glasses,activity_minutes,stress_level,screen_time,mood,smoked_or_drink,work_hours,pain,pain_notes,weather_effect,recommendation
+16,,2025-08-28,8,3,False,8,120,3,False,4,False,10,False,,Tired,
+17,,2025-08-28,6,2,False,6,110,3,False,4,False,10,False,,Tired,
+18,,2025-08-28,9,3,False,8,110,3,False,4,False,9,False,,Tired,
+19,,2025-08-28,5,3,False,8,120,3,False,4,False,9,False,,Tired,You slept less than 6 hours 😴. Try to go to bed earlier tonight. You drank less water 💧. Aim for at least 6-8 glasses today. You had low activity yesterday 🏃. Try a 20-minute walk.
+20,,2025-08-28,8,3,False,7,90,2,True,2,False,6,False,,Bad,You drank less water 💧. Aim for at least 6-8 glasses today. You had low activity yesterday 🏃. Try a 20-minute walk. You used screens before bed 📱. Try avoiding screens 1h before sleep.
